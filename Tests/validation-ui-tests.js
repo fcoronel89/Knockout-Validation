@@ -3,6 +3,13 @@
 /// <reference path="../Src/knockout.validation.js" />
 /// <reference path="Qunit/qunit.js" />
 
+var getErrorMessage = function(error) {
+	if (!error) 
+		return error;
+	else
+		return error.message;
+};
+
 module('UI Tests', {
     setup: function () {
 
@@ -402,13 +409,13 @@ test("Issue #43 & #47 - Error messages are not switched correctly", function () 
 
     vm.testObj(-1); // should invalidate the min rule
 
-    ok(!vm.testObj.isValid(), vm.testObj.error());
-    equal(vm.testObj.error(), $msg.text(), "Min rule was correctly triggered");
+    ok(!vm.testObj.isValid(), getErrorMessage(vm.testObj.error()));
+    equal(getErrorMessage(vm.testObj.error()), $msg.text(), "Min rule was correctly triggered");
 
     vm.testObj(101); // should invalidate the max rule
 
-    ok(!vm.testObj.isValid(), vm.testObj.error());
-    equal(vm.testObj.error(), $msg.text(), "Max rule was correctly triggered");
+    ok(!vm.testObj.isValid(), getErrorMessage(vm.testObj.error()));
+    equal(getErrorMessage(vm.testObj.error()), $msg.text(), "Max rule was correctly triggered");
 });
 
 test("Issue #44 - Validation Element - Is Valid Test", function () {
