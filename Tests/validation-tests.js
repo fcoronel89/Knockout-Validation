@@ -6,6 +6,13 @@
 
 module('Required Validation');
 
+var getErrorMessage = function(error) {
+	if (!error) 
+		return error;
+	else
+		return error.message;
+};
+
 test('Object is Valid and isValid returns True', function () {
 
     var testObj = ko.observable('')
@@ -180,7 +187,7 @@ test('Issue #33 - Arrays - Invalid', function () {
                     .extend({ minLength: 4 });
 
     testObj(['one', 'two', 'three']);
-    ok(!testObj.isValid(), testObj.error());
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
 });
 //#endregion
 
@@ -228,7 +235,7 @@ test('Issue #33 - Arrays - Invalid', function () {
                     .extend({ maxLength: 2 });
 
     testObj(['one', 'two', 'three']);
-    ok(!testObj.isValid(), testObj.error());
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
 });
 //#endregion
 
@@ -405,8 +412,8 @@ test('Object is NOT Valid and isValid returns False', function () {
     testObj('text#example.com');
 
     equal(testObj(), 'text#example.com', 'observable still works');
-    equal( testObj.isValid(), false, testObj.error());
-    equal( testObj.error(), 'Please enter a proper email address', "Error Message Needs to be formatted correctly" );
+    equal( testObj.isValid(), false, getErrorMessage(testObj.error()));
+    equal( getErrorMessage(testObj.error()), 'Please enter a proper email address', "Error Message Needs to be formatted correctly" );
 });
 
 test('Email with invalid domain', function(){
@@ -414,8 +421,8 @@ test('Email with invalid domain', function(){
 
     testObj("john@abc.com123");
 
-    equal( testObj.isValid(), false, testObj.error());
-    equal( testObj.error(), 'Please enter a proper email address');
+    equal( testObj.isValid(), false, getErrorMessage(testObj.error()));
+    equal( getErrorMessage(testObj.error()), 'Please enter a proper email address');
 });
 //#endregion
 
@@ -445,7 +452,7 @@ test('Object is NOT Valid and isValid returns False', function () {
     testObj('stuff');
 
     equal(testObj(), 'stuff', 'observable still works');
-    equal(testObj.isValid(), false, testObj.error());
+    equal(testObj.isValid(), false, getErrorMessage(testObj.error()));
 });
 
 //#endregion
@@ -476,7 +483,7 @@ test('Object is NOT Valid and isValid returns False', function () {
     testObj('stuff');
 
     equal(testObj(), 'stuff', 'observable still works');
-    equal(testObj.isValid(), false, testObj.error());
+    equal(testObj.isValid(), false, getErrorMessage(testObj.error()));
 });
 
 //#endregion
@@ -507,7 +514,7 @@ test('Object is NOT Valid and isValid returns False', function () {
     testObj('stuff');
 
     equal(testObj(), 'stuff', 'observable still works');
-    equal(testObj.isValid(), false, testObj.error());
+    equal(testObj.isValid(), false, getErrorMessage(testObj.error()));
 });
 
 //#endregion
@@ -538,7 +545,7 @@ test('Object is NOT Valid and isValid returns False', function () {
     testObj('stuff');
 
     equal(testObj(), 'stuff', 'observable still works');
-    equal(testObj.isValid(), false, testObj.error());
+    equal(testObj.isValid(), false, getErrorMessage(testObj.error()));
 });
 
 //#endregion
@@ -611,7 +618,7 @@ test('Custom Rule Is NOT Valid Test', function () {
     testObj(6);
 
     equal(testObj(), 6, 'observable still works');
-    ok(testObj.error(), testObj.error());
+    ok(getErrorMessage(testObj.error()), getErrorMessage(testObj.error()));
     equal(testObj.isValid(), false, 'testObj is valid');
 });
 
@@ -632,7 +639,7 @@ test('Custom Message Correctly appears', function () {
 
     equal(testObj(), '', 'observable still works');
     equal(testObj.isValid(), false, 'testObj is valid');
-    equal(testObj.error(), 'This Message is Special', "Message appears correctly");
+    equal(getErrorMessage(testObj.error()), 'This Message is Special', "Message appears correctly");
 });
 
 //#endregion
@@ -672,7 +679,7 @@ test('Object is Valid and isValid returns True', function () {
 
     equal(testObj(), 4, 'observable still works');
     equal(testObj.isValid(), false, 'testObj is valid');
-    equal(testObj.error(), 'Must Equal 5', 'Error Message Matches');
+    equal(getErrorMessage(testObj.error()), 'Must Equal 5', 'Error Message Matches');
 });
 
 
@@ -698,7 +705,7 @@ test( 'Issue #81 - Dynamic messages', function () {
     testObj( 4 );
 
     equal( testObj.isValid(), false, 'testObj is not valid' );
-    equal( testObj.error(), 'after', 'testObj changes messages dynamically' );
+    equal( getErrorMessage(testObj.error()), 'after', 'testObj changes messages dynamically' );
 });
 
 //#endregion
@@ -716,16 +723,16 @@ test('Object is Valid and isValid returns True', function () {
             }
            });
 
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('required') > -1, "required is first error");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('required') > -1, "required is first error");
 
     testObj('s');
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('at least') > -1, "Minimum Length not met");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('at least') > -1, "Minimum Length not met");
 
     testObj('som');
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('must contain') > -1, "Doesn't match required pattern");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('must contain') > -1, "Doesn't match required pattern");
 
 });
 
@@ -739,16 +746,16 @@ test('Object is Valid and isValid returns True', function () {
                     }
                 });
 
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('required') > -1, "required is first error");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('required') > -1, "required is first error");
 
     testObj('s');
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('at least') > -1, "Minimum Length not met");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('at least') > -1, "Minimum Length not met");
 
     testObj('som');
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('must contain') > -1, "Doesn't match required pattern");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('must contain') > -1, "Doesn't match required pattern");
 
 });
 
@@ -757,12 +764,12 @@ test("Issue #47 - Validation chaining issue with required and email rules", func
                     .extend({ required: true })
                     .extend({ email: { message: 'Invalid email address.' } });
 
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('required') > -1, "required is first error");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('required') > -1, "required is first error");
 
     testObj('s'); // an invalid email address
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('Invalid email') > -1, "Email error is second error");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('Invalid email') > -1, "Email error is second error");
 });
 
 test("Issue #43 - Error messages are not switched correctly", function () {
@@ -770,13 +777,13 @@ test("Issue #43 - Error messages are not switched correctly", function () {
 
     testObj(-1); // should invalidate the min rule
 
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('enter a value greater than') > -1, "Min rule was correctly triggered");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('enter a value greater than') > -1, "Min rule was correctly triggered");
 
     testObj(101); // should invalidate the max rule
 
-    ok(!testObj.isValid(), testObj.error());
-    ok(testObj.error().indexOf('enter a value less than') > -1, "Max rule was correctly triggered");
+    ok(!testObj.isValid(), getErrorMessage(testObj.error()));
+    ok(getErrorMessage(testObj.error()).indexOf('enter a value less than') > -1, "Max rule was correctly triggered");
 });
 
 test("Issue #43 - Grouping - Error messages are not switched correctly", function () {
@@ -789,13 +796,13 @@ test("Issue #43 - Grouping - Error messages are not switched correctly", functio
 
     vm.testObj(-1); // should invalidate the min rule
 
-    ok(!vm.testObj.isValid(), vm.testObj.error());
-    ok(vm.testObj.error().indexOf('enter a value greater than') > -1, "Min rule was correctly triggered");
+    ok(!vm.testObj.isValid(), getErrorMessage(vm.testObj.error()));
+    ok(getErrorMessage(vm.testObj.error()).indexOf('enter a value greater than') > -1, "Min rule was correctly triggered");
 
     vm.testObj(101); // should invalidate the max rule
 
-    ok(!vm.testObj.isValid(), vm.testObj.error());
-    ok(vm.testObj.error().indexOf('enter a value less than') > -1, "Max rule was correctly triggered");
+    ok(!vm.testObj.isValid(), getErrorMessage(vm.testObj.error()));
+    ok(getErrorMessage(vm.testObj.error()).indexOf('enter a value less than') > -1, "Max rule was correctly triggered");
 });
 
 test('Issue #78 - Falsy Params', function () {
@@ -829,14 +836,14 @@ test("setError sets isValid and error message", function () {
 
 	//check initial validation state
     ok(testObj.isValid());
-    equal(testObj.error(), null);
+    equal(getErrorMessage(testObj.error()), null);
 
 	//manually set an error
     testObj.setError("oh no!");
 
 	//check state was set
     ok(!testObj.isValid());
-	equal("oh no!", testObj.error());
+	equal("oh no!", getErrorMessage(testObj.error()));
 });
 
 test("clearError clears manually-specified error", function () {
@@ -852,7 +859,7 @@ test("clearError clears manually-specified error", function () {
 
 	//check state was cleared
 	ok(testObj.isValid());
-	equal(testObj.error(), null);
+	equal(getErrorMessage(testObj.error()), null);
 });
 
 test("clearError clears automatic errors", function () {
@@ -866,7 +873,7 @@ test("clearError clears automatic errors", function () {
 
 	//check validation was cleared
 	ok(testObj.isValid());
-	equal(testObj.error(), null);
+	equal(getErrorMessage(testObj.error()), null);
 });
 
 //#endregion
@@ -1331,7 +1338,7 @@ asyncTest('Async Rule Is NOT Valid Test', function () {
 
     var doAssertions = function () {
         equal(testObj(), 4, 'observable still works');
-        ok(testObj.error(), testObj.error());
+        ok(getErrorMessage(testObj.error()), getErrorMessage(testObj.error()));
         equal(testObj.isValid(), false, 'testObj is not valid');
     };
 

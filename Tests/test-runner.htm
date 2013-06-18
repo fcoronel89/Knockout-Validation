@@ -42,7 +42,7 @@
             };
 
             var viewModel = {
-                firstName: ko.observable().extend({ minLength: 2, maxLength: 10 }),
+                firstName: ko.observable().extend({ minLength: 2, maxLength: { params: 10, customClass: 'maxLength-exeded' } }),
                 lastName: ko.observable().extend({ required: true }),
                 emailAddress: ko.observable().extend({  // custom message
                     required: { message: 'Please supply your email address.' }
@@ -50,7 +50,7 @@
                 age: ko.observable().extend({ min: 1, max: 100 }),
                 location: ko.observable(),
                 subscriptionOptions: ['Technology', 'Music'],
-                subscription: ko.observable().extend({ required: true }),
+                subscription: ko.observable().extend({ required: { customClass: "my-class" } }),
                 password: ko.observable(),
                 captcha: ko.observable().extend({  // custom Anonymous validator
                     validation: { validator: captcha, message: 'Please check.' }
