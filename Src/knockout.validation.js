@@ -406,10 +406,11 @@
                     //      }
                     //  )};
                     //
-                    if (params.message || params.onlyIf) { //if it has a message or condition object, then its an object literal to use
+                    if (params.message || params.onlyIf || params.customClass) { //if it has a message or condition object, then its an object literal to use
                         return exports.addRule(observable, {
                             rule: ruleName,
                             message: params.message,
+							customClass: params.customClass,
                             params: utils.isEmptyVal(params.params) ? true : params.params,
                             condition: params.onlyIf
                         });
@@ -791,7 +792,15 @@
             // create a handler to correctly return an error message
             var errorMsgAccessor = function () {
                 if (!config.messagesOnModified || isModified) {
-                    return isValid ? null : obsv.error;
+                    return isValid || !obsv.error() ? null : obsv.error().message;
+                } else {
+                    return null;
+                }
+            };
+			
+			var errorClassAccessor = function () {
+                if (!config.messagesOnModified || isModified) {
+                    return isValid || !obsv.error() ? null : obsv.error().context.customClass;
                 } else {
                     return null;
                 }
@@ -803,6 +812,7 @@
             };
 
             ko.bindingHandlers.text.update(element, errorMsgAccessor);
+			ko.bindingHandlers.css.update(element, errorClassAccessor);
             ko.bindingHandlers.visible.update(element, visiblityAccessor);
         }
     };
@@ -847,7 +857,7 @@
             var errorMsgTitleAccessor = function () {
                 if (!config.errorsAsTitleOnModified || isModified) {
                     if (!isValid) {
-                        return { title: obsv.error, 'data-orig-title': utils.getOriginalElementTitle(element) };
+                        return { title: obsv.error() ? obsv.error().message : null, 'data-orig-title': utils.getOriginalElementTitle(element) };
                     } else {
                         return { title: utils.getOriginalElementTitle(element), 'data-orig-title': null };
                     }
@@ -949,7 +959,8 @@
 
 			//manually set error state
             observable.setError = function (error) {
-				observable.error(error);
+				//TODO: allow to set as object
+				observable.error({ message: error });
             	observable.__valid__(false);
             };
 
@@ -995,7 +1006,7 @@
         if (!rule.validator(observable(), ctx.params === undefined ? true : ctx.params)) { // default param is true, eg. required = true
 
             //not valid, so format the error message and stick it in the 'error' variable
-            observable.error(exports.formatMessage(ctx.message || rule.message, ctx.params));
+            observable.error({ message: exports.formatMessage(ctx.message || rule.message, ctx.params), context: ctx, rule: rule });
             observable.__valid__(false);
             return false;
         } else {
@@ -1028,7 +1039,7 @@
 
             if (!isValid) {
                 //not valid, so format the error message and stick it in the 'error' variable
-                observable.error(exports.formatMessage(msg || ctx.message || rule.message, ctx.params));
+                observable.error({ message: exports.formatMessage(ctx.message || rule.message, ctx.params), context: ctx, rule: rule });
                 observable.__valid__(isValid);
             }
 
